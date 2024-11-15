@@ -1,0 +1,51 @@
+import speech_recognition as sr
+import pyttsx3
+
+# 初始化语音合成引擎
+engine = pyttsx3.init()
+
+def speak(text):
+    engine.say(text)
+    engine.runAndWait()
+
+def listen():
+    # 初始化语音识别器
+    recognizer = sr.Recognizer()
+    
+    with sr.Microphone() as source:
+        print("请说话...")
+        audio = recognizer.listen(source)
+        
+        try:
+            # 使用 Google 语音识别
+            command = recognizer.recognize_google(audio, language='zh-CN')
+            print(f"你说: {command}")
+            return command
+        except sr.UnknownValueError:
+            print("抱歉，我没有听清楚。")
+            return None
+        except sr.RequestError:
+            print("无法连接到语音识别服务。")
+            return None
+
+def main():
+    speak("你好，我是你的智能语音助手。")
+    
+    while True:
+        command = listen()
+        
+        if command:
+            if "退出" in command:
+                speak("再见！")
+                break
+            elif "天气" in command:
+                speak("今天的天气很好！")
+            elif "时间" in command:
+                from datetime import datetime
+                current_time = datetime.now().strftime("%H:%M")
+                speak(f"现在是 {current_time}。")
+            else:
+                speak("抱歉，我无法处理这个请求。")
+
+if __name__ == "__main__":
+    main()
